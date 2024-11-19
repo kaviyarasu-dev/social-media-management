@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Interfaces\SocialMediaInterface;
 use Laravel\Socialite\Facades\Socialite;
 
-class LinkedInService implements SocialMediaInterface
+class InstagramService implements SocialMediaInterface
 {
     public function connect(): array
     {

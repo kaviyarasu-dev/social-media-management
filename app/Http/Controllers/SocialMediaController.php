@@ -5,13 +5,19 @@ namespace App\Http\Controllers;
 use App\Interfaces\SocialMediaInterface;
 use App\Models\Account;
 use App\Models\UserAccount;
+use App\Services\SocialMedia;
+use App\Services\SocialMediaService;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialMediaController extends Controller
 {
-
-    public function __construct(public SocialMediaInterface $socialMediaInterface) {}
-
+    /**
+     * Redirect the user to the authentication page for the given driver.
+     *
+     * @param string $driverName The slug of the social media driver.
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function redirect(string $driverName)
     {
         return Socialite::driver($driverName)->redirect();
@@ -27,15 +33,19 @@ class SocialMediaController extends Controller
      *
      * @param string $driverName The slug of the social media driver.
      *
-     * @return \Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function callback(string $driverName)
     {
         $account = Account::where('slug', $driverName)->firstOrFail();
+        $services = (array) app(SocialMediaInterface::class, ['drivers' => [$driverName]]);
 
-        $response = $this->socialMediaInterface->connect();
+        (new SocialMediaService($services))->connect();
+        foreach ($services as $service) {
+            $response = $service->connect();
 
-        UserAccount::updateOrCreate(['user_id' => auth()->id(), 'account_id' => $account->id], $response);
+            UserAccount::updateOrCreate(['user_id' => auth('web')->id(), 'account_id' => $account->id], $response);
+        }
 
         return to_route('dashboard');
     }

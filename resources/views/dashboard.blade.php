@@ -18,6 +18,15 @@
                     @endforeach
                 </div>
 
+                <div class="flex flex-cols-4 gap-4 p-6">
+                    @foreach ($myAccounts as $myAccount)
+                    <div class="flex flex-col items-center">
+                        <img src="{{ $myAccount->profile }}" alt="{{ $myAccount->name }}" class="h-12 w-12 rounded">
+                        <span class="px-3 py-2 bg-sky-500/100 text-center rounded-md">{{ $myAccount->account_status }}</span>
+                    </div>
+                    @endforeach
+                </div>
+
             </div>
         </div>
     </div>

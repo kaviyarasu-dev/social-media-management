@@ -10,10 +10,16 @@ class UserAccount extends Model
     protected $fillable = [
         'account_id',
         'user_id',
+        'profile',
         'token',
         'refresh_token',
         'expired_at',
     ];
+
+    public function getAccountStatusAttribute(): string
+    {
+        return now() >= $this->expired_at ? 'Expired' : 'Connected';
+    }
 
     public function account(): BelongsTo
     {
